@@ -1,14 +1,23 @@
 export const fetchData = (drugname, setVariable, setError, setLoading) => {
-    fetch(`http://localhost:9000/testAPI/${drugname}`).then((res) => res.json()).then((data) => {
-        setVariable(data);
-        console.log(data);
-        setLoading(false);
-    }).catch((err) => {
-        console.error(err);
-        setError(true);
-        setLoading(false);
+  fetch(`http://localhost:3000/api/search/${drugname}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error('Drug not found');
+      }
+      return res.json();
+    })
+    .then((data) => {
+      setVariable(data);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error('Error fetching data:', err);
+      setError(true);
+      setLoading(false);
     });
 };
+
+
 
 export const stringToDate = (_date, _format, _delimiter) => {
     if (!_date) return new Date();

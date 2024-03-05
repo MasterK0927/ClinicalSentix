@@ -7,13 +7,13 @@ const Home = () => {
   const [drugname, setDrugname] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const url= process.env.REACT_APP_API_URL || "http://localhost:9000/api";
+  const url= process.env.REACT_APP_API_URL || "http://localhost:3000/api";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch(`${url}/${drugname}`);
+      const response = await fetch(`${url}/search/${drugname}`);
       console.log("response", response);
       const data = response.data;
       console.log("Fetched data:", data);

@@ -7,7 +7,7 @@ const DefCard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('api_endpoint');
+        const response = await fetch('http://localhost:3000/api/sales');
         const data = await response.json();
         setSalesData(data);
       } catch (error) {
