@@ -1,4 +1,3 @@
-
 import { AreaChart, Card, Title } from "@tremor/react";
 import React from "react";
 
@@ -65,22 +64,19 @@ const chartdata2 = [
   },
 ];
 
-const AreaChartInteractiveExample = ({ timeline, setDate, setOpen }) => {
-  if (!timeline) timeline = chartdata2;
-
+const AreaChartInteractiveExample = ({ setDate, setOpen }) => {
   return (
     <>
       <Card>
         <Title>Tweets Count Timeline</Title>
         <AreaChart
           className="h-72 mt-4"
-          data={timeline}
+          data={chartdata2}
           index="date"
           categories={["tweetcount"]}
           colors={["indigo"]}
           yAxisWidth={30}
           onValueChange={(v) => { setDate(v?.date); setOpen(true)}}
-
         />
       </Card>
     </>

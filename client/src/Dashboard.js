@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import DefCard from "./components/DefCard";
-import AreaChartInteractiveExample from "./components/ArChart";
+import AreaChartInteractiveExample from "./components/ArChart"; // Import the component
 import Header from "./components/Header";
 import { Card, DonutChart, Title } from "@tremor/react";
 import { fetchData, stringToDate } from "./utils/requests";
@@ -37,12 +37,52 @@ function Copyright(props) {
   );
 }
 
+function generateFakeTweets(count) {
+  const tweets = [];
+  for (let i = 0; i < count; i++) {
+    tweets.push({
+      id: i + 1,
+      text: `This is a fake tweet ${i + 1}`,
+      date: new Date().toISOString(),
+    });
+  }
+  return tweets;
+}
+
+function generateFakeNamedEntities(count) {
+  const entities = [];
+  const names = ["Headache", "IUD", "Birth-control", "abdominal-pain", "depression"];
+  for (let i = 0; i < count; i++) {
+    entities.push({
+      id: i + 1,
+      name: names[i % names.length],
+      count: Math.floor(Math.random() * 100),
+    });
+  }
+  return entities;
+}
+
 // TODO remove, this demo shouldn't need to reset the theme.
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
 });
+
+const fakeTimelineData = [
+  { date: "Jan 23", "2022": 45, "2023": 78 },
+  { date: "Feb 23", "2022": 52, "2023": 71 },
+  { date: "Mar 23", "2022": 48, "2023": 80 },
+  { date: "Apr 23", "2022": 61, "2023": 65 },
+  { date: "May 23", "2022": 55, "2023": 58 },
+  { date: "Jun 23", "2022": 67, "2023": 62 },
+  { date: "Jul 23", "2022": 60, "2023": 54 },
+  { date: "Aug 23", "2022": 72, "2023": 49 },
+  { date: "Sep 23", "2022": 65, "2023": 52 },
+  { date: "Oct 23", "2022": 68, "2023": null },
+  { date: "Nov 23", "2022": 74, "2023": null },
+  { date: "Dec 23", "2022": 71, "2023": null },
+];
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -61,13 +101,13 @@ export default function Dashboard() {
     fetchData(drugname, setTweetData, setError, setLoading);
     console.log("fetching data");
   }, [drugname]);
-  
+
   const tweetDataByDate = useCallback(
     (date) => {
-      const tweets = calculateTweetsByTimeframe(tweetData.tweets, date);
+      const tweets = calculateTweetsByTimeframe(tweetData, date);
       setTweetsFromDate(tweets);
     },
-    [tweetData.tweets]
+    [tweetData]
   );
 
   useEffect(() => {
@@ -78,7 +118,7 @@ export default function Dashboard() {
     const currentDate = new Date();
     const startDate = !!start ? start : new Date();
 
-    if (tweets) {
+    if (Array.isArray(tweets)) {
       const filteredTweets = tweets.filter((tweet) => {
         const tweetDate = new Date(tweet.date);
         return tweetDate >= startDate && tweetDate <= currentDate;
@@ -89,12 +129,20 @@ export default function Dashboard() {
     }
   };
 
+
   if (loading || !tweetData) {
     return <div className="loading">Loading...please wait</div>;
   }
   if (error) {
     return navigate("/error");
   }
+
+  // Generate fake data
+  const fakeTweetData = generateFakeTweets(10);
+  const totalPositiveTweets = 10;
+  const totalNegativeTweets = 40;
+  const totalNeutralTweets = 50;
+  const fakeNamedEntities = generateFakeNamedEntities(10);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -124,9 +172,9 @@ export default function Dashboard() {
               <Grid item xs={12} md={8} lg={9}>
                 <Sidebar tweetData={tweetsFromDate} isOpen={open} date={date} />
                 <AreaChartInteractiveExample
-                  timeline={tweetData.timeline}
-                  setDate={setDate}
-                  setOpen={setOpen}
+                  timeline={fakeTimelineData}
+                  setDate={setDate} // Pass necessary props
+                  setOpen={setOpen} // Pass necessary props
                 />
               </Grid>
 
@@ -139,13 +187,13 @@ export default function Dashboard() {
                     data={[
                       {
                         lang: "Positive",
-                        tweets: tweetData.totalPositiveTweets,
+                        tweets: totalPositiveTweets,
                       },
                       {
                         lang: "Negative",
-                        tweets: tweetData.totalNegativeTweets,
+                        tweets: totalNegativeTweets,
                       },
-                      { lang: "Neutral", tweets: tweetData.totalNeutralTweets },
+                      { lang: "Neutral", tweets: totalNeutralTweets },
                     ]}
                     category="tweets"
                     index="lang"
@@ -158,7 +206,7 @@ export default function Dashboard() {
 
               {/* Bar Chart (Named Entity count) */}
               <Grid item xs={12} md={12} lg={12}>
-                <BarchartComp namedData={tweetData.topNamedEntities} />
+                <BarchartComp namedData={fakeNamedEntities} />
               </Grid>
 
               <Grid item xs={12} md={4} lg={3}>
